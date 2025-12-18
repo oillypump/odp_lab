@@ -1,0 +1,83 @@
+version: '3.7'
+services:
+  trino-coordinator:
+    image: 'trinodb/trino:latest'
+    hostname: trino-coordinator
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./etc:/etc/trino
+    networks:
+      - trino-network
+
+  metastore-db:
+    image: postgres:14
+    container_name: metastore-db
+    hostname: metastore-db
+    environment:
+      POSTGRES_DB: metastore
+      POSTGRES_USER: hive
+      POSTGRES_PASSWORD: hive
+    volumes:
+      - metastore-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hive -d metastore"]
+      interval: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    networks:
+      - trino-network
+
+  hive-metastore:
+    build: ./metastore
+    container_name: hive-metastore
+    hostname: hive-metastore
+    ports:
+      - '9083:9083' # Metastore Thrift
+    volumes:
+      - ./conf/metastore-site.xml:/opt/hive/conf/metastore-site.xml:ro
+    command: ["/bin/bash", "/opt/hive/conf/entrypoint.sh"]
+    environment:
+      DB_DRIVER: postgres
+      HIVE_METASTORE_DB_TYPE: postgres
+      METASTORE_DB_HOSTNAME: metastore-db
+      METASTORE_DB_PORT: 5432
+      METASTORE_DB_NAME: metastore
+      METASTORE_DB_USER: hive
+      METASTORE_DB_PASSWORD: hive
+      SERVICE_NAME: metastore
+    depends_on:
+      - metastore-db
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 9083"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - trino-network
+
+  minio:
+    image: 'minio/minio:latest'
+    hostname: minio
+    container_name: minio
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - minio-data:/data
+    environment:
+      MINIO_ACCESS_KEY: minio
+      MINIO_SECRET_KEY: minio123
+    command: server --console-address ":9001" /data
+    networks:
+      - trino-network
+
+volumes:
+  minio-data:
+    driver: local
+  metastore-db:  
+
+networks:
+  trino-network:
+    driver: bridge
