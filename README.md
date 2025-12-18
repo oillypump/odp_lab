@@ -1,16 +1,19 @@
 # ODP Lab
 
+## Logical topology
+
+![topo](./pics/odp1.drawio.png)
 
 ### clone repo
 ```
-git clone https://github.com/oillypump/odp_lab.git
+$ git clone https://github.com/oillypump/odp_lab.git
 ```
 
 ### update host
 ```
-cd odp_lab
-chmod +x update_host.sh
-sudo sh update_host.sh
+$ cd odp_lab
+$ chmod +x update_host.sh
+$ sudo sh update_host.sh
 ```
 
 ### install python + notebook extension
@@ -21,11 +24,16 @@ sudo sh update_host.sh
 ### create python env
 
 ```
-python3 -m venv .venv
-pip install -r requirements.txt
+$ python3 -m venv .venv
+$ pip install -r requirements.txt
+```
+### start docker container
+
+```
+$ docker compose up -d
 ```
 
-## load table ICEBERG
+## load parquet to ICEBERG
 ### download dan load data ``yellow_tripdata_2023-01.parquet`` to Iceberg 
 
 open and run jupyter notebook : /notebook/load-to-iceberg.ipynb
@@ -40,7 +48,7 @@ open and run jupyter notebook : /notebook/load-to-iceberg.ipynb
 
 ![minio1](./pics/minio_1.png)
 
-## load table DELTALAKE
+## load parquet to DELTALAKE
 ### download dan load data ``yellow_tripdata_2023-01.parquet`` to deltalake 
 
 open and run jupyter notebook : /notebook/load-to-deltalake.ipynb
