@@ -1,0 +1,4 @@
+pyarrow
+pandas
+pyiceberg[hive]
+pyiceberg
