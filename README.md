@@ -18,8 +18,8 @@ $ sudo sh update_host.sh
 
 ### install python + notebook extension
 
-![ext1](./pics/extension_1.png)
-![ext2](./pics/extension_2.png)
+<!-- ![ext1](./pics/extension_1.png)
+![ext2](./pics/extension_2.png) -->
 
 ### create python env
 
@@ -27,7 +27,7 @@ $ sudo sh update_host.sh
 $ python3 -m venv .venv
 $ pip install -r requirements.txt
 ```
-### start docker container
+### build image and start docker container
 
 ```
 $ docker compose up -d
