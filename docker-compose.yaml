@@ -73,10 +73,80 @@ services:
     networks:
       - trino-network
 
+  # SPARK CLUSTER
+  spark-master:
+    build: ./spark
+    container_name: spark-master
+    hostname: spark-master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+    command: bash -c "/opt/spark/sbin/start-master.sh; tail -f /opt/spark/logs/*"
+    ports:
+      - "8180:8080"   # Spark Web UI
+      - "7077:7077"   # Spark master port
+    volumes:
+      - spark-events:/opt/spark/spark-events
+      - ./spark/conf:/opt/spark/conf
+    networks:
+      - trino-network
+
+  spark-worker:
+    build: ./spark
+    container_name: spark-worker
+    hostname: spark-worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=1G
+    command: bash -c "/opt/spark/sbin/start-worker.sh spark://spark-master:7077; tail -f /opt/spark/logs/*"
+    depends_on:
+      - spark-master
+    ports:
+      - "8081:8081"   # Worker UI
+    volumes:
+      - spark-events:/opt/spark/spark-events
+      - ./spark/conf:/opt/spark/conf
+    networks:
+      - trino-network
+
+  spark-history:
+    build: ./spark
+    container_name: spark-history
+    hostname: spark-history
+    environment:
+      - SPARK_HISTORY_OPTS=-Dspark.history.fs.logDirectory=/opt/spark/spark-events
+    command: bash -c "/opt/spark/sbin/start-history-server.sh && tail -f /opt/spark/logs/*"
+    ports:
+      - "18080:18080"   # Spark History Server UI
+    volumes:
+      - spark-events:/opt/spark/spark-events
+    networks:
+      - trino-network
+    depends_on:
+      - spark-master
+      - spark-worker  
+
+  notebooks:
+    build: ./jupyter
+    container_name: notebooks
+    hostname: notebooks
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./notebooks:/home/jupyter/notebooks
+    networks:
+      - trino-network
+    depends_on:
+      - spark-master
+
 volumes:
   minio-data:
     driver: local
   metastore-db:  
+  spark-events:
 
 networks:
   trino-network:
