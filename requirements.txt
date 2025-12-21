@@ -3,3 +3,4 @@ pandas
 pyiceberg[hive]
 pyiceberg
 deltalake
+pyspark
