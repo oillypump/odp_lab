@@ -12,8 +12,8 @@ $ git clone https://github.com/oillypump/odp_lab.git
 ### update host
 ```
 $ cd odp_lab
-$ chmod +x update_host.sh
-$ sudo sh update_host.sh
+$ chmod +x update-host.sh
+$ sudo sh update-host.sh
 ```
 
 ### install python + notebook extension
@@ -72,3 +72,42 @@ CALL delta.system.register_table(
 - minio
 
 ![minio2](./pics/minio_2.png)
+
+
+## SPARK : Load data to Iceberg
+
+open and run spark-load-to-iceberg.ipynb dari web jupyter
+
+- notebook
+![notebook1](/pics/notebook1.png)
+
+- spark master
+![spark-master](/pics/spark-master1.png)
+
+- spark worker
+![spark-worker1](/pics/spark-worker1.png)
+
+- trino
+![trino-spark1](/pics/trino-spark1.png)
+
+
+## SPARK : read data from Iceberg
+
+open and run spark-read-from-iceberg.ipynb dari web jupyter
+
+- notebook
+![notebook2](/pics/notebook2.png)
+
+- spark master
+![spark-read1](/pics/spark-read1.png)
+
+- spark worker
+![spark-read2](/pics/spark-read2.png)
+
+- spark histo
+![spark-histo1](/pics/spark-histo1.png)
+
+
+## Refference
+
+https://www.youtube.com/watch?v=GGdVfDdeNYs

@@ -73,74 +73,28 @@ services:
     networks:
       - trino-network
 
-  # SPARK CLUSTER
-  spark-master:
-    build: ./spark
-    container_name: spark-master
-    hostname: spark-master
-    environment:
-      - SPARK_MODE=master
-      - SPARK_MASTER_PORT=7077
-      - SPARK_MASTER_WEBUI_PORT=8080
-    command: bash -c "/opt/spark/sbin/start-master.sh; tail -f /opt/spark/logs/*"
-    ports:
-      - "8180:8080"   # Spark Web UI
-      - "7077:7077"   # Spark master port
+  # SPARK-NB CLUSTER
+  spark-nb:
+    build:
+      context: spark
+      dockerfile: Dockerfile.spark-nb
+    container_name: spark-nb
+    hostname: spark-nb
     volumes:
-      - spark-events:/opt/spark/spark-events
-      - ./spark/conf:/opt/spark/conf
-    networks:
-      - trino-network
-
-  spark-worker:
-    build: ./spark
-    container_name: spark-worker
-    hostname: spark-worker
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-      - SPARK_WORKER_CORES=2
-      - SPARK_WORKER_MEMORY=1G
-    command: bash -c "/opt/spark/sbin/start-worker.sh spark://spark-master:7077; tail -f /opt/spark/logs/*"
-    depends_on:
-      - spark-master
+      - ./notebooks:/home/sparkuser/notebooks
+      - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+      - spark-events:/opt/spark/event_logs
     ports:
+      - "8888:8888"   # Jupyter
+      - "8082:8080"   # Master UI
       - "8081:8081"   # Worker UI
-    volumes:
-      - spark-events:/opt/spark/spark-events
-      - ./spark/conf:/opt/spark/conf
-    networks:
-      - trino-network
-
-  spark-history:
-    build: ./spark
-    container_name: spark-history
-    hostname: spark-history
+      - "18080:18080" # History Server
+      - "4040:4040"   # Spark Jobs UI
     environment:
-      - SPARK_HISTORY_OPTS=-Dspark.history.fs.logDirectory=/opt/spark/spark-events
-    command: bash -c "/opt/spark/sbin/start-history-server.sh && tail -f /opt/spark/logs/*"
-    ports:
-      - "18080:18080"   # Spark History Server UI
-    volumes:
-      - spark-events:/opt/spark/spark-events
+      - SPARK_MASTER_HOST=spark-nb
     networks:
       - trino-network
-    depends_on:
-      - spark-master
-      - spark-worker  
 
-  notebooks:
-    build: ./jupyter
-    container_name: notebooks
-    hostname: notebooks
-    ports:
-      - "8888:8888"
-    volumes:
-      - ./notebooks:/home/jupyter/notebooks
-    networks:
-      - trino-network
-    depends_on:
-      - spark-master
 
 volumes:
   minio-data:
