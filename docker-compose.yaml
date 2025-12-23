@@ -73,10 +73,34 @@ services:
     networks:
       - trino-network
 
+  # SPARK-NB CLUSTER
+  spark-nb:
+    build:
+      context: spark
+      dockerfile: Dockerfile.spark-nb
+    container_name: spark-nb
+    hostname: spark-nb
+    volumes:
+      - ./notebooks:/home/sparkuser/notebooks
+      - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+      - spark-events:/opt/spark/event_logs
+    ports:
+      - "8888:8888"   # Jupyter
+      - "8082:8080"   # Master UI
+      - "8081:8081"   # Worker UI
+      - "18080:18080" # History Server
+      - "4040:4040"   # Spark Jobs UI
+    environment:
+      - SPARK_MASTER_HOST=spark-nb
+    networks:
+      - trino-network
+
+
 volumes:
   minio-data:
     driver: local
   metastore-db:  
+  spark-events:
 
 networks:
   trino-network:

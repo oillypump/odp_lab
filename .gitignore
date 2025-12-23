@@ -1,2 +1,6 @@
 .venv
 *.parquet
+*.jar
+*checkpoint.ipynb
+*.tgz
+.ipynb_checkpoints
