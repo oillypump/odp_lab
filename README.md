@@ -2,7 +2,9 @@
 
 ## Logical topology
 
-![topo](./pics/odp1.drawio.png)
+<!-- ![topo](./pics/odp1.drawio.png) -->
+
+![topo2](./pics/odp2.drawio.png)
 
 ### clone repo
 ```
