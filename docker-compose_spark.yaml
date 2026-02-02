@@ -9,12 +9,9 @@ services:
       - ./etc:/etc/trino
     networks:
       - trino-network
-    depends_on:
-      hive-metastore:
-        condition: service_healthy
 
   metastore-db:
-    image: postgres:16
+    image: postgres:14
     container_name: metastore-db
     hostname: metastore-db
     environment:
@@ -23,7 +20,6 @@ services:
       POSTGRES_PASSWORD: hive
     volumes:
       - metastore-db:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U hive -d metastore"]
       interval: 5s
@@ -34,15 +30,16 @@ services:
       - trino-network
 
   hive-metastore:
+    # build: ./metastore
     build:
-      context: ./Dockerfile/metastore
+      context: ./metastore
       dockerfile: Dockerfile.metastore
     container_name: hive-metastore
     hostname: hive-metastore
     ports:
-      - "9083:9083"
+      - "9083:9083" # Metastore Thrift
     volumes:
-      - ./Dockerfile/metastore/conf/metastore-site.xml:/opt/hive/conf/metastore-site.xml:ro
+      - ./conf/metastore-site.xml:/opt/hive/conf/metastore-site.xml:ro
     command: ["/bin/bash", "/opt/hive/conf/entrypoint.sh"]
     environment:
       DB_DRIVER: postgres
@@ -56,7 +53,7 @@ services:
     depends_on:
       - metastore-db
     healthcheck:
-      test: ["CMD-SHELL", "bash -c ':> /dev/tcp/127.0.0.1/9083'"]
+      test: ["CMD-SHELL", "nc -z localhost 9083"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -79,28 +76,27 @@ services:
     networks:
       - trino-network
 
-  metabase:
-    image: metabase/metabase:latest
-    container_name: metabase
-    hostname: metabase
+  # SPARK-NB CLUSTER
+  spark-nb:
+    build:
+      context: ./spark
+      dockerfile: Dockerfile.spark-nb
+    container_name: spark-nb
+    hostname: spark-nb
     volumes:
-      - /dev/urandom:/dev/random:ro
+      - ./notebooks:/home/sparkuser/notebooks
+      - ./spark/conf/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+      - spark-events:/opt/spark/event_logs
     ports:
-      - 3000:3000
+      - "8888:8888" # Jupyter
+      - "8082:8080" # Master UI
+      - "8081:8081" # Worker UI
+      - "18080:18080" # History Server
+      - "4040:4040" # Spark Jobs UI
     environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: metabasedb
-      MB_DB_PORT: 5432
-      MB_DB_USER: metabase
-      MB_DB_PASS: metabase
-      MB_DB_HOST: metastore-db
+      - SPARK_MASTER_HOST=spark-nb
     networks:
       - trino-network
-    healthcheck:
-      test: curl --fail -I http://localhost:3000/api/health || exit 1
-      interval: 15s
-      timeout: 5s
-      retries: 5
 
 volumes:
   minio-data:

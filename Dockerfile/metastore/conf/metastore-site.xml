@@ -37,16 +37,21 @@
         <value>org.apache.hadoop.hive.metastore.DefaultPartitionExpressionProxy</value>
     </property>
 
+    <property>
+        <name>hive.metastore.warehouse.dir</name>
+        <value>s3a://warehouse/</value>
+    </property>
+
       <!-- S3/MinIO configuration -->
     
     <property>
         <name>fs.s3a.access.key</name>
-        <value>minio</value>
+        <value>minioadmin</value>
     </property>
     
     <property>
         <name>fs.s3a.secret.key</name>
-        <value>minio123</value>
+        <value>minioadmin</value>
     </property>
     
     <property>
@@ -64,9 +69,14 @@
       <value>false</value>
     </property>
 
-    <!-- tambahan utk s3 -->
     <property>
-      <name>fs.s3a.impl</name>
-      <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
+        <name>fs.s3a.impl</name>
+        <value>org.apache.hadoop.fs.s3a.S3AFileSystem</value>
     </property>
+
+    <property>
+        <name>metastore.storage.schema.reader.impl</name>
+        <value>org.apache.hadoop.hive.metastore.SerDeStorageSchemaReader</value>
+    </property>
+
 </configuration>

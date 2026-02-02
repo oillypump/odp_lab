@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64 \
     SPARK_HOME=/opt/spark \
     PATH=$PATH:/opt/spark/bin:/opt/spark/sbin \
-    SPARK_VERSION=3.5.7 \
+    SPARK_VERSION=3.5.8 \
     HADOOP_VERSION=hadoop3
 
 RUN apt-get update && apt-get install -y \
@@ -21,14 +21,14 @@ RUN apt-get update && apt-get install -y \
 # COPY
 # COPY ./jars/spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz /tmp/
 # RUN tar -xzf /tmp/spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz -C /opt/ && \
-    # mv /opt/spark-${SPARK_VERSION}-bin-${HADOOP_VERSION} $SPARK_HOME && \
-    # rm /tmp/spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz
+# mv /opt/spark-${SPARK_VERSION}-bin-${HADOOP_VERSION} $SPARK_HOME && \
+# rm /tmp/spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz
 
 # DOWNLOAD 
 RUN wget -q https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz && \
-   tar -xzf spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz && \
-   mv spark-${SPARK_VERSION}-bin-${HADOOP_VERSION} $SPARK_HOME && \
-   rm spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz
+    tar -xzf spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz && \
+    mv spark-${SPARK_VERSION}-bin-${HADOOP_VERSION} $SPARK_HOME && \
+    rm spark-${SPARK_VERSION}-bin-${HADOOP_VERSION}.tgz
 
 # Pastikan file JAR ada di folder yang sama dengan Dockerfile (atau sesuaikan path-nya)
 # COPY ./jars/hadoop-aws-3.3.4.jar ${SPARK_HOME}/jars/
