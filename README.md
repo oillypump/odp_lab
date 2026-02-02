@@ -7,11 +7,13 @@
 ![topo2](./pics/odp2.drawio.png)
 
 ### clone repo
+
 ```
 $ git clone https://github.com/oillypump/odp_lab.git
 ```
 
 ### update host
+
 ```
 $ cd odp_lab
 $ chmod +x update-host.sh
@@ -29,6 +31,7 @@ $ sudo sh update-host.sh
 $ python3 -m venv .venv
 $ pip install -r requirements.txt
 ```
+
 ### build image and start docker container
 
 ```
@@ -36,26 +39,29 @@ $ docker compose up -d
 ```
 
 ## load parquet to ICEBERG
-### download dan load data ``yellow_tripdata_2023-01.parquet`` to Iceberg 
+
+### download dan load data `yellow_tripdata_2023-01.parquet` to Iceberg
 
 open and run jupyter notebook : /notebook/load-to-iceberg.ipynb
 
 ### check loaded table on trino & minio
 
-- trino 
+- trino
 
 ![trino1](./pics/trino_1.png)
 
-- minio 
+- minio
 
 ![minio1](./pics/minio_1.png)
 
 ## load parquet to DELTALAKE
-### download dan load data ``yellow_tripdata_2023-01.parquet`` to deltalake 
+
+### download dan load data `yellow_tripdata_2023-01.parquet` to deltalake
 
 open and run jupyter notebook : /notebook/load-to-deltalake.ipynb
 
 ### register table on trino
+
 ```
 CALL delta.system.register_table(
   schema_name => 'bronze',
@@ -75,41 +81,42 @@ CALL delta.system.register_table(
 
 ![minio2](./pics/minio_2.png)
 
-
 ## SPARK : Load data to Iceberg
 
 open and run spark-load-to-iceberg.ipynb dari web jupyter
 
 - notebook
-![notebook1](/pics/notebook1.png)
+  ![notebook1](/pics/notebook1.png)
 
 - spark master
-![spark-master](/pics/spark-master1.png)
+  ![spark-master](/pics/spark-master1.png)
 
 - spark worker
-![spark-worker1](/pics/spark-worker1.png)
+  ![spark-worker1](/pics/spark-worker1.png)
 
 - trino
-![trino-spark1](/pics/trino-spark1.png)
-
+  ![trino-spark1](/pics/trino-spark1.png)
 
 ## SPARK : read data from Iceberg
 
 open and run spark-read-from-iceberg.ipynb dari web jupyter
 
 - notebook
-![notebook2](/pics/notebook2.png)
+  ![notebook2](/pics/notebook2.png)
 
 - spark master
-![spark-read1](/pics/spark-read1.png)
+  ![spark-read1](/pics/spark-read1.png)
 
 - spark worker
-![spark-read2](/pics/spark-read2.png)
+  ![spark-read2](/pics/spark-read2.png)
 
 - spark histo
-![spark-histo1](/pics/spark-histo1.png)
-
+  ![spark-histo1](/pics/spark-histo1.png)
 
 ## Refference
 
 https://www.youtube.com/watch?v=GGdVfDdeNYs
+
+## command
+
+docker compose build --no-cache && docker compose up -d
